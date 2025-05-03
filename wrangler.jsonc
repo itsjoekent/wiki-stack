@@ -1,0 +1,10 @@
+{
+  "name": "nologic_game_wiki_stack",
+  "compatibility_date": "2025-04-03",
+  "assets": {
+    // TODO: Setup the 404 page
+    // https://developers.cloudflare.com/workers/static-assets/routing/#not_found_handling--404-page--single-page-application--none
+    "not_found_handling": "single-page-application"
+  },
+  "main": "./worker/index.ts"
+}

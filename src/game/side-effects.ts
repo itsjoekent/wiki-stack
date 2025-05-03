@@ -1,0 +1,177 @@
+import * as actions from './actions';
+import * as constants from './constants';
+import * as api from './proxy';
+import { reducer } from './reducer';
+import * as selectors from './selectors';
+import type { Page } from './types';
+import { pickDeckCards, randomArrayPick } from './utils';
+
+// Load the initial game data
+reducer.registerActionCompletedListener(async (event) => {
+  if (event.data.type !== actions.setSceneActionName) return;
+
+  const scene = selectors.selectScene(event.data.updatedState);
+  const isTableReady = selectors.selectIsTableReady(event.data.updatedState);
+
+  if (scene === 'game' && !isTableReady) {
+    // TODO: Add more pages to the starter list
+    const { options } = await import('./starters.json');
+    const starters = randomArrayPick(options, constants.TOTAL_STACKS);
+
+    const starterPages = await Promise.all(
+      starters.map((starter) => api.fetchPageData(starter)),
+    );
+
+    const pages = starterPages.reduce(
+      (acc, page) => {
+        acc[page.url] = page;
+        return acc;
+      },
+      {} as Record<string, Page>,
+    );
+
+    const stacks = starters.map((starter) => [starter]);
+    const deck = stacks.map((stack) => pickDeckCards(pages[stack[0]])).flat();
+
+    actions.setupGame({
+      deck,
+      pages,
+      stacks,
+    });
+  }
+});
+
+// Load the page data for cards in the deck that are not already loaded
+reducer.registerStateChangedListener(async (event) => {
+  const scene = selectors.selectScene(event.data.updatedState);
+  if (scene !== 'game') return;
+
+  const isGameOver = selectors.selectIsGameOver(event.data.updatedState);
+  if (isGameOver) return;
+
+  const deck = selectors.selectDeck(event.data.updatedState);
+
+  const missingPages = deck.filter((url, index) => {
+    if (index > 4) return false;
+
+    const page = selectors.selectPage(event.data.updatedState, url);
+
+    return !page && !api.isLoadingPageData(url);
+  });
+
+  if (!missingPages.length) return;
+
+  const pageData = await Promise.all(
+    missingPages.map((url) => api.fetchPageData(url)),
+  );
+
+  const pages = pageData.reduce(
+    (acc, page, index) => {
+      acc[page.url] = page;
+
+      // Handle redirects
+      if (missingPages[index] !== page.url) {
+        acc[missingPages[index]] = page;
+      }
+
+      return acc;
+    },
+    {} as Record<string, Page>,
+  );
+
+  actions.bulkAddPages({ pages });
+});
+
+// Confirm the game is ready to play
+reducer.registerStateChangedListener(async (event) => {
+  const scene = selectors.selectScene(event.data.updatedState);
+  if (scene !== 'game') return;
+
+  const isGameOver = selectors.selectIsGameOver(event.data.updatedState);
+  if (isGameOver) return;
+
+  const isReadyToPlay = selectors.selectIsReadyToPlay(event.data.updatedState);
+  if (isReadyToPlay) return;
+
+  const deck = selectors.selectDeck(event.data.updatedState);
+  const isTableReady = selectors.selectIsTableReady(event.data.updatedState);
+
+  if (!deck.length && !isTableReady) return;
+
+  const firstCard = deck[0];
+  const page = selectors.selectPage(event.data.updatedState, firstCard);
+  if (!page) return;
+
+  // TODO: In the future, we will need a conditional for multiplayer connections
+
+  actions.setReadyToPlay({ isReadyToPlay: true });
+});
+
+// When a page is added to a stack, add more pages to the deck based on the stack update
+reducer.registerActionCompletedListener(async (event) => {
+  if (event.data.type !== actions.pushTopOfDeckToStackActionName) return;
+
+  const scene = selectors.selectScene(event.data.updatedState);
+  if (scene !== 'game') return;
+
+  const isReadyToPlay = selectors.selectIsReadyToPlay(event.data.updatedState);
+  if (!isReadyToPlay) return;
+
+  const isGameOver = selectors.selectIsGameOver(event.data.updatedState);
+  if (isGameOver) return;
+
+  const { stackIndex } = event.data
+    .payload as actions.PushTopOfDeckToStackActionPayload;
+
+  const topOfStackUrl = selectors.selectTopOfStack(event.data.updatedState, stackIndex);
+  let page = selectors.selectPage(event.data.updatedState, topOfStackUrl);
+
+  if (!page) {
+    page = await api.fetchPageData(topOfStackUrl);
+    actions.bulkAddPages({ pages: { [page.url]: page } });
+  }
+
+  const addedDeckPages = pickDeckCards(page);
+  actions.addAndReshuffleDeck({
+    addToDeck: addedDeckPages,
+    preserveTopCards: 3,
+  });
+});
+
+// Keep the timer updated when the state changes
+reducer.registerStateChangedListener(async (event) => {
+  const scene = selectors.selectScene(event.data.updatedState);
+  if (scene !== 'game') return;
+
+  const isReadyToPlay = selectors.selectIsReadyToPlay(event.data.updatedState);
+  if (!isReadyToPlay) return;
+
+  const isGameOver = selectors.selectIsGameOver(event.data.updatedState);
+  const previousTimeoutId = selectors.selectTimerTimeoutId(
+    event.data.previousState,
+  );
+
+  if (isGameOver) {
+    if (previousTimeoutId) {
+      clearTimeout(previousTimeoutId);
+    }
+    return;
+  };
+
+  const timerEndsAt = selectors.selectTimerEndsAt(event.data.updatedState);
+  if (!timerEndsAt) return;
+
+  const previousTimerEndsAt = selectors.selectTimerEndsAt(event.data.previousState);
+  if (timerEndsAt === previousTimerEndsAt) return;
+
+  if (previousTimeoutId) {
+    clearTimeout(previousTimeoutId);
+  }
+
+  const timeLeft = Math.max(timerEndsAt - Date.now(), 0);
+  const updatedTimeoutId = setTimeout(() => {
+    actions.setTimerExpired();
+  }, timeLeft);
+
+  actions.updateTimerTimeoutId({ timeoutId: updatedTimeoutId });
+});
