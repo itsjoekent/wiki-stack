@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { reducer } from '@/game/reducer';
 import { selectDeckPages, selectIsGameOver } from '@/game/selectors';
 import { useReducer } from '@/lib/reducer';
@@ -14,14 +13,8 @@ export function GameDeck() {
 
   return (
     <div className="game-deck">
-      {deck.map((page, index) => (
-        <Fragment key={page.url}>
-          {!isGameOver && index === 0 && (
-            <TableDraggable key={page.url} page={page} />
-          )}
-          {(isGameOver || index > 0) && <PageCard key={page.url} page={page} />}
-        </Fragment>
-      ))}
+      {!isGameOver && <TableDraggable page={deck[0]} />}
+      {isGameOver && <PageCard page={deck[0]} />}
     </div>
   );
 }

@@ -4,7 +4,6 @@
   align-items: center;
   width: 100%;
   max-width: 600px;
-  height: 100%;
   padding: 24px;
 }
 
@@ -43,6 +42,6 @@
   /* TODO: inset shadow treatment */
 }
 
-.game-drop-zone .--hovering {
+.game-drop-zone.--hovering {
   background-color: #34cb20;
 }

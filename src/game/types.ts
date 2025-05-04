@@ -8,7 +8,7 @@ export type PageLink = {
 export type Page = {
   title: string;
   description: string;
-  imageSrc: string;
+  imageSrc?: string;
   imageAlt: string;
   url: string;
   path: string;

@@ -117,7 +117,7 @@ export function parseWikiPage(url: string, html: string): Page {
   return {
     title,
     description,
-    imageSrc: imageSources[0] || '',
+    imageSrc: imageSources[0],
     imageAlt: title,
     url: urlObj.href,
     path: urlObj.pathname,

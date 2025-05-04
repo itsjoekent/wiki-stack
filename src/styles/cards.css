@@ -28,3 +28,15 @@
   font-size: 18px;
   font-weight: bold;
 }
+
+.messy-card-stack {
+  display: block;
+  width: 180px;
+  height: 210px;
+  position: relative;
+}
+
+.messy-card-stack .messy-card-stack__wrapper {
+  position: absolute;
+  transform-origin: center;
+}

@@ -30,8 +30,12 @@ reducer.registerActionCompletedListener(async (event) => {
       {} as Record<string, Page>,
     );
 
-    const stacks = starters.map((starter) => [starter]);
-    const deck = stacks.map((stack) => pickDeckCards(pages[stack[0]])).flat();
+    const stacks = Object.keys(pages).map((url) => [url]);
+    const deck = stacks
+      .map((stack) =>
+        pickDeckCards(pages[stack[0]], constants.PAGES_TO_ADD_ON_DROP, []),
+      )
+      .flat();
 
     actions.setupGame({
       deck,
@@ -123,7 +127,10 @@ reducer.registerActionCompletedListener(async (event) => {
   const { stackIndex } = event.data
     .payload as actions.PushTopOfDeckToStackActionPayload;
 
-  const topOfStackUrl = selectors.selectTopOfStack(event.data.updatedState, stackIndex);
+  const topOfStackUrl = selectors.selectTopOfStack(
+    event.data.updatedState,
+    stackIndex,
+  );
   let page = selectors.selectPage(event.data.updatedState, topOfStackUrl);
 
   if (!page) {
@@ -131,7 +138,12 @@ reducer.registerActionCompletedListener(async (event) => {
     actions.bulkAddPages({ pages: { [page.url]: page } });
   }
 
-  const addedDeckPages = pickDeckCards(page);
+  const existingPages = selectors.selectAllPageUrls(event.data.updatedState);
+  const addedDeckPages = pickDeckCards(
+    page,
+    constants.PAGES_TO_ADD_ON_DROP,
+    existingPages,
+  );
   actions.addAndReshuffleDeck({
     addToDeck: addedDeckPages,
     preserveTopCards: 3,
@@ -156,12 +168,14 @@ reducer.registerStateChangedListener(async (event) => {
       clearTimeout(previousTimeoutId);
     }
     return;
-  };
+  }
 
   const timerEndsAt = selectors.selectTimerEndsAt(event.data.updatedState);
   if (!timerEndsAt) return;
 
-  const previousTimerEndsAt = selectors.selectTimerEndsAt(event.data.previousState);
+  const previousTimerEndsAt = selectors.selectTimerEndsAt(
+    event.data.previousState,
+  );
   if (timerEndsAt === previousTimerEndsAt) return;
 
   if (previousTimeoutId) {

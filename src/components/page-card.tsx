@@ -8,10 +8,7 @@ export function PageCard(props: {
 
   return (
     <div {...divProps} className="card page-card">
-      <img
-        src={page.imageSrc || undefined}
-        alt={page.imageAlt}
-      />
+      {page.imageSrc && <img src={page.imageSrc} alt={page.imageAlt} />}
       <p className="page-card-title">{page.title}</p>
     </div>
   );

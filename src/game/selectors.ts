@@ -13,11 +13,20 @@ export function selectStacksWithPages(state: GameState) {
   return stacks.map((stack) => stack.map((url) => selectPage(state, url)));
 }
 
-export function selectTopOfStack(state: GameState, stackIndex: number) {
+export function selectStack(state: GameState, stackIndex: number) {
   const stacks = selectStacks(state);
   if (stackIndex < 0 || stackIndex >= stacks.length) throw new Error('Invalid stack index');
 
-  const stack = stacks[stackIndex];
+  return stacks[stackIndex];
+}
+
+export function selectStackWithPages(state: GameState, stackIndex: number) {
+  const stack = selectStack(state, stackIndex);
+  return stack.map((url) => selectPage(state, url));
+}
+
+export function selectTopOfStack(state: GameState, stackIndex: number) {
+  const stack = selectStack(state, stackIndex);
   if (stack.length === 0) throw new Error('Stack is empty');
 
   return stack[stack.length - 1];
@@ -34,6 +43,10 @@ export function selectIsTableReady(state: GameState) {
 
 export function selectDeck(state: GameState) {
   return state.deck;
+}
+
+export function selectAllPageUrls(state: GameState) {
+  return Object.keys(state.pages);
 }
 
 export function selectPage(state: GameState, url: string) {

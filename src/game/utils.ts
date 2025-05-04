@@ -16,9 +16,9 @@ export function randomArrayShuffle<T>(array: T[]): T[] {
     .map(({ value }) => value);
 }
 
-export function pickDeckCards(page: Page) {
-  const links = page.links.map((link) => link.url);
-  const pickedLinks = randomArrayPick(links, 3);
+export function pickDeckCards(page: Page, count: number, filterOut: string[]) {
+  const links = page.links.map((link) => link.url).filter((url => !filterOut.includes(url)));
+  const pickedLinks = randomArrayPick(links, Math.min(count, links.length));
   return randomArrayShuffle(pickedLinks);
 }
 
