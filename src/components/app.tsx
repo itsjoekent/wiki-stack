@@ -7,7 +7,7 @@ export function App() {
   const [scene] = useReducer(reducer, selectScene);
 
   return (
-    <main className="flex justify-center width-full height-full min-h-screen p-4 bg-emerald-800">
+    <main className="app">
       {scene === 'game' && <GameScene />}
     </main>
   );

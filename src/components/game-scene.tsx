@@ -8,11 +8,15 @@ export function GameScene() {
   const [isReadyToPlay] = useReducer(reducer, selectIsReadyToPlay);
 
   if (!isReadyToPlay) {
-    return <div>Loading...</div>;
+    return (
+      <div className="game-scene game-scene__loading">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-lg">
+    <div className="game-scene">
       <Timer />
       <TableDragContext />
     </div>

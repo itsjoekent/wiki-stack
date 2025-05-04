@@ -7,16 +7,12 @@ export function PageCard(props: {
   const { page, divProps } = props;
 
   return (
-    <div
-      {...divProps}
-      className="flex flex-row items-center w-full max-w-md gap-2 p-2 rounded-lg bg-neutral-100"
-    >
+    <div {...divProps} className="card page-card">
       <img
-        className="w-16 h-16 rounded-lg object-cover"
         src={page.imageSrc || undefined}
         alt={page.imageAlt}
       />
-      <p className="text-neutral-800">{page.title}</p>
+      <p className="page-card-title">{page.title}</p>
     </div>
   );
 }

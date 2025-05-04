@@ -13,7 +13,7 @@ export function GameDeck() {
   );
 
   return (
-    <div className="flex flex-col items-center w-full mt-auto">
+    <div className="game-deck">
       {deck.map((page, index) => (
         <Fragment key={page.url}>
           {!isGameOver && index === 0 && (

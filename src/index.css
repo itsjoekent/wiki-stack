@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@import url('./styles/reset.css');
+@import url('./styles/app.css');
+@import url('./styles/cards.css');
+@import url('./styles/game.css');
 
 :root {
   box-sizing: border-box;

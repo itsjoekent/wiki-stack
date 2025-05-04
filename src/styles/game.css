@@ -1,0 +1,48 @@
+.game-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
+  padding: 24px;
+}
+
+.game-scene__loading {
+  justify-content: center;
+}
+
+.game-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.game-deck .page-card {
+  max-width: 180px;
+}
+
+.game-zones-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.game-drop-zone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: #0b6100;
+  /* TODO: inset shadow treatment */
+}
+
+.game-drop-zone .--hovering {
+  background-color: #34cb20;
+}

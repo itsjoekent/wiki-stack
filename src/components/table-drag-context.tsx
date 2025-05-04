@@ -26,7 +26,7 @@ export function TableDragContext() {
 
   return (
     <DndContext onDragEnd={onDragEnd}>
-      <div className="flex flex-col items-center w-full gap-4 mt-4">
+      <div className="game-zones-grid">
         {stacksIterator.map((_, index) => (
           <TableDropZone
             key={index}
