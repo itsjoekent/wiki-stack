@@ -107,6 +107,7 @@ reducer.registerStateChangedListener(async (event) => {
   if (!page) return;
 
   // TODO: In the future, we will need a conditional for multiplayer connections
+  // TODO: Preload all page images
 
   actions.setReadyToPlay({ isReadyToPlay: true });
 });
@@ -189,3 +190,5 @@ reducer.registerStateChangedListener(async (event) => {
 
   actions.updateTimerTimeoutId({ timeoutId: updatedTimeoutId });
 });
+
+// TODO: Preload all page images

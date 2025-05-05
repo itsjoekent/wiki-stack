@@ -1,8 +1,14 @@
-- switch to vertical card layout
-  - slight card/paper texture?
-- redo stack UI
-  - a stack of the cards, with slight rotation to express the depth
-  - create an opaque rect area around the stack to change color on hover
+- dynamic units
+- font
+- mobile drag support
+
+- card improvements
+  - paper texture?
+  - bigger shadow
+- drop zone improvements
+  - color/texture
+  - inset shadow
+  - hover effect
 - deck should only reveal top card, rest should be flipped over, back of card should have a texture/graphic
 - better background texture, should feel like a poker board
 
