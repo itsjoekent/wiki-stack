@@ -12,10 +12,6 @@ export function TableDropZone(props: { stackIndex: number, stack: Page[] }) {
     id: stackIndex.toString(),
   });
 
-  const style = {
-    color: isOver ? 'green' : undefined,
-  };
-
   const conditionalClasses = classNames({
     '--hovering': isOver,
   });
@@ -32,7 +28,6 @@ export function TableDropZone(props: { stackIndex: number, stack: Page[] }) {
     <div
       ref={setNodeRef}
       className={`game-drop-zone ${conditionalClasses}`}
-      style={style}
     >
       <MessyCardStack ids={stackCardIds} renderCard={renderCard} />
     </div>

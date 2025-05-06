@@ -42,5 +42,5 @@
 }
 
 .game-drop-zone.--hovering {
-  background-color: #34cb20;
+  background-color: rgba(180, 184, 193, 0.5);
 }
