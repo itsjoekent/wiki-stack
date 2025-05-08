@@ -6,11 +6,13 @@ import { PageCard } from './page-card';
 export function TableDraggable(props: { page: Page }) {
   const { page } = props;
 
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: page.url,
   });
 
   const style = {
+    cursor: isDragging ? 'grabbing' : 'grab',
+    touchAction: 'none',
     transform: CSS.Translate.toString(transform),
   };
 
