@@ -3,14 +3,14 @@ import classNames from 'classnames';
 
 type Props = {
   children: ReactNode;
-  isFlipped: boolean;
+  side: 'back' | 'front';
 };
 
 export function FlipCard(props: Props) {
-  const { children, isFlipped } = props;
+  const { children, side } = props;
 
   const conditionalClasses = classNames({
-    '--flipped': isFlipped,
+    '--flipped': side === 'back',
   });
 
   return (

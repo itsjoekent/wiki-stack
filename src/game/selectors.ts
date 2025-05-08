@@ -37,6 +37,14 @@ export function selectTopOfStackPage(state: GameState, stackIndex: number) {
   return selectPage(state, url);
 }
 
+export function selectIncorrectStackIndex(state: GameState) {
+  if (state.endState.isGameOver && state.endState.reason === 'incorrect') {
+    return state.endState.stackIndex;
+  }
+
+  return null;
+}
+
 export function selectIsTableReady(state: GameState) {
   return selectStacks(state).length > 0 && state.deck.length > 0;
 }

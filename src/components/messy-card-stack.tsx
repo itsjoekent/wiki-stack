@@ -9,13 +9,14 @@ type Transformation = {
 type Props = {
   ids: string[];
   renderCard: (id: string) => JSX.Element;
+  zIndexOffset?: number;
 };
 
 const MAX_TRANSLATE_OFFSET = 4;
-const MAX_ROTATION_OFFSET = 3;
+const MAX_ROTATION_OFFSET = 2;
 
 export function MessyCardStack(props: Props) {
-  const { ids, renderCard } = props;
+  const { ids, renderCard, zIndexOffset = 0 } = props;
 
   const [transforms, setTransforms] = useState<Record<string, Transformation>>(
     {},
@@ -58,6 +59,7 @@ export function MessyCardStack(props: Props) {
             key={id}
             className="messy-card-stack__wrapper"
             style={{
+              zIndex: ids.length - ids.indexOf(id) + zIndexOffset,
               transform: `translate(${x}px, ${y}px) rotate(${rotation}deg)`,
             }}
           >

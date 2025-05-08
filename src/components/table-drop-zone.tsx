@@ -5,8 +5,8 @@ import { MessyCardStack } from './messy-card-stack';
 import { PageCard } from './page-card';
 import { useCallback, useMemo } from 'react';
 
-export function TableDropZone(props: { stackIndex: number, stack: Page[] }) {
-  const { stackIndex, stack } = props;
+export function TableDropZone(props: { stackIndex: number, isIncorrect: boolean, stack: Page[] }) {
+  const { isIncorrect, stackIndex, stack } = props;
 
   const { isOver, setNodeRef } = useDroppable({
     id: stackIndex.toString(),
@@ -14,9 +14,10 @@ export function TableDropZone(props: { stackIndex: number, stack: Page[] }) {
 
   const conditionalClasses = classNames({
     '--hovering': isOver,
+    '--incorrect': isIncorrect,
   });
 
-  const stackCardIds = useMemo(() => stack.map((page) => page.url), [stack]);
+  const stackCardIds = useMemo(() => stack.map((page) => page.url).reverse(), [stack]);
   const renderCard = useCallback((url: string) => {
     const page = stack.find((page) => page.url === url);
     if (!page) throw new Error(`Page not found: ${url}`);

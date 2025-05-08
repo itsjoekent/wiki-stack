@@ -1,6 +1,6 @@
 import * as actions from './actions';
 import * as constants from './constants';
-import * as api from './proxy';
+import * as proxy from './proxy';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
 import type { Page } from './types';
@@ -19,7 +19,7 @@ reducer.registerActionCompletedListener(async (event) => {
     const starters = randomArrayPick(options, constants.TOTAL_STACKS);
 
     const starterPages = await Promise.all(
-      starters.map((starter) => api.fetchPageData(starter)),
+      starters.map((starter) => proxy.fetchPageData(starter)),
     );
 
     const pages = starterPages.reduce(
@@ -60,13 +60,13 @@ reducer.registerStateChangedListener(async (event) => {
 
     const page = selectors.selectPage(event.data.updatedState, url);
 
-    return !page && !api.isLoadingPageData(url);
+    return !page && !proxy.isLoadingPageData(url);
   });
 
   if (!missingPages.length) return;
 
   const pageData = await Promise.all(
-    missingPages.map((url) => api.fetchPageData(url)),
+    missingPages.map((url) => proxy.fetchPageData(url)),
   );
 
   const pages = pageData.reduce(
@@ -106,7 +106,6 @@ reducer.registerStateChangedListener(async (event) => {
   const page = selectors.selectPage(event.data.updatedState, firstCard);
   if (!page) return;
 
-  // TODO: In the future, we will need a conditional for multiplayer connections
   // TODO: Preload all page images
 
   actions.setReadyToPlay({ isReadyToPlay: true });
@@ -132,19 +131,25 @@ reducer.registerActionCompletedListener(async (event) => {
     event.data.updatedState,
     stackIndex,
   );
+
+  const existingPages = selectors.selectAllPageUrls(event.data.updatedState);
   let page = selectors.selectPage(event.data.updatedState, topOfStackUrl);
 
   if (!page) {
-    page = await api.fetchPageData(topOfStackUrl);
+    page = await proxy.fetchPageData(topOfStackUrl);
     actions.bulkAddPages({ pages: { [page.url]: page } });
   }
 
-  const existingPages = selectors.selectAllPageUrls(event.data.updatedState);
+  const possibleAddedDeckPages = page.links.filter((pageLink) =>
+    existingPages.includes(pageLink.url),
+  ).map((pageLink) => pageLink.url);
+
   const addedDeckPages = pickDeckCards(
     page,
     constants.PAGES_TO_ADD_ON_DROP,
-    existingPages,
+    possibleAddedDeckPages,
   );
+
   actions.addAndReshuffleDeck({
     addToDeck: addedDeckPages,
     preserveTopCards: 3,
