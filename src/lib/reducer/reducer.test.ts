@@ -103,7 +103,7 @@ describe('Reducer', () => {
       throw new Error('Something went wrong');
     });
 
-    expect(() => faultyAction({})).not.toThrow();
+    expect(() => faultyAction()).not.toThrow();
 
     expect(failedListener).toHaveBeenCalledTimes(1);
     expect(failedListener).toHaveBeenCalledWith(

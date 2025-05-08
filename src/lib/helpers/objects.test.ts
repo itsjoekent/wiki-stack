@@ -8,7 +8,6 @@ describe('deepFreeze', () => {
 
     expect(Object.isFrozen(frozenObj)).toBe(true);
     expect(() => {
-      // @ts-expect-error: Testing immutability
       frozenObj.a = 3;
     }).toThrow();
   });
@@ -22,7 +21,6 @@ describe('deepFreeze', () => {
     expect(Object.isFrozen(frozenObj.b.d)).toBe(true);
 
     expect(() => {
-      // @ts-expect-error: Testing immutability
       frozenObj.b.c = 4;
     }).toThrow();
   });

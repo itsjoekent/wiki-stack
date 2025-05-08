@@ -51,7 +51,7 @@ export class FetchClient {
           },
         ],
         afterResponse: [
-          (request, options, response) => {
+          (request, _options, response) => {
             const { method, url } = request;
             const path = this.urlToPath(url);
 
