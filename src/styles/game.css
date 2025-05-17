@@ -5,9 +5,16 @@
   width: 100%;
   max-width: 600px;
   padding: 2rem;
+
+  opacity: 1;
+  transition: all 1s ease;
 }
 
-.game-scene__loading {
+.game-scene.--fading {
+  opacity: 0;
+}
+
+.game-scene.--loading {
   justify-content: center;
 }
 
@@ -39,6 +46,8 @@
   width: 100%;
   padding: 1rem;
   border-radius: 12px;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
 .game-drop-zone.--hovering {
@@ -46,5 +55,49 @@
 }
 
 .game-drop-zone.--incorrect {
-  background-color: rgba(255, 0, 0, 0.5);
+  background-color: rgba(241, 56, 113, 0.5);
 }
+
+.game-drop-zone.--correct {
+  background-color: rgb(56, 241, 184, 0.5);
+}
+
+.game-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  background-color: #cccfd5;
+}
+
+.game-timer.--expired {
+  background-color: #fab8cd;
+}
+
+.game-timer.--warning {
+  background-color: #fac5b8;
+}
+
+.game-timer span {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #40454e;
+}
+
+.game-timer span.--small {
+  font-size: 0.9rem;
+}
+
+.game-timer p {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #40454e;
+}
+
+/* .game-timer.--expired span, .game-timer.--expired p {
+  color: #f13871;
+} */

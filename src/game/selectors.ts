@@ -87,7 +87,7 @@ export function selectPagesHaveRelation(
 
   if (!leftPage || !rightPage) return false;
 
-  return (
+  return !!(
     selectPageHasLink(state, leftPageUrl, rightPageUrl) ||
     selectPageHasLink(state, rightPageUrl, leftPageUrl)
   );
@@ -111,4 +111,69 @@ export function selectTimerTimeoutId(state: GameState) {
 
 export function selectTimerEndsAt(state: GameState) {
   return state.timer.endsAt;
+}
+
+export function selectIsFadingToEndState(state: GameState) {
+  return state.fadeToEndScreen;
+}
+
+export function selectHighestStackCount(state: GameState) {
+  const stacks = selectStacks(state);
+  const incorrectStackIndex = selectIncorrectStackIndex(state);
+
+  const [count, index] = stacks.reduce((max, stack, index) => {
+    const length = (stack.length - 1) - (incorrectStackIndex === index ? 1 : 0);
+    if (length > max[0]) {
+      return [length, index];
+    }
+    return max;
+  }, [0, 0]);
+
+  return { count, index };
+}
+
+export function selectTotalCorrect(state: GameState) {
+  const stacks = selectStacks(state);
+  const endReason = selectGameOverReason(state);
+
+  const totalCards = stacks.reduce((acc, stack) => acc + stack.length, 0) - stacks.length;
+
+  if (endReason === 'incorrect') {
+    return totalCards - 1;
+  }
+
+  return totalCards;
+}
+
+export function selectTimePlayed(state: GameState) {
+  const startedAt = state.startedAt;
+  const endsAt = state.endedAt;
+
+  if (!startedAt || !endsAt) return 0;
+
+  return Math.floor((endsAt - startedAt) / 1000);
+}
+
+export function selectCorrectLinksForIncorrectGuess(state: GameState) {
+  const incorrectStackIndex = selectIncorrectStackIndex(state);
+  if (incorrectStackIndex === null) return null;
+
+  const incorrectPage = selectTopOfStackPage(state, incorrectStackIndex);
+  const topPages = selectStacks(state).map((_stack, index) =>
+    selectTopOfStackPage(state, index),
+  ).filter((_page, index) => index !== incorrectStackIndex);
+
+  return topPages
+    .map((page) => {
+      if (selectPageHasLink(state, incorrectPage.url, page.url)) {
+        return { from: incorrectPage, to: page };
+      }
+
+      if (selectPageHasLink(state, page.url, incorrectPage.url)) {
+        return { from: page, to: incorrectPage };
+      }
+
+      return null;
+    })
+    .filter((val) => val !== null);
 }

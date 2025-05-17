@@ -10,10 +10,13 @@ export const initialState: GameState = {
   endState: {
     isGameOver: false,
   },
+  startedAt: null,
+  endedAt: null,
   timer: {
     endsAt: null,
     timeoutId: null,
   },
+  fadeToEndScreen: false,
 };
 
 export const reducer = new Reducer(initialState);

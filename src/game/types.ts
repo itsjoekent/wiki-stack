@@ -23,6 +23,8 @@ export type GameState = {
   stacks: Stack[];
   deck: Stack;
   isReadyToPlay: boolean;
+  startedAt: number | null;
+  endedAt: number | null;
   timer: {
     endsAt: number | null;
     timeoutId: ReturnType<typeof setTimeout> | null;
@@ -40,4 +42,5 @@ export type GameState = {
         reason: 'incorrect';
         stackIndex: number;
       };
+  fadeToEndScreen: boolean;
 };

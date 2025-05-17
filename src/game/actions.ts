@@ -59,6 +59,7 @@ export const setReadyToPlayActionName = 'set_ready_to_play';
 export const setReadyToPlay = reducer.defineAction<SetReadyToPlayActionPayload>(
   setReadyToPlayActionName,
   ({ state, payload }) => {
+    state.startedAt = Date.now();
     state.isReadyToPlay = payload.isReadyToPlay;
     state.timer.endsAt = Date.now() + constants.INITIAL_TIMER_MS;
   },
@@ -95,6 +96,7 @@ export const pushTopOfDeckToStack =
         state.timer.endsAt =
           (state.timer.endsAt ?? Date.now()) + constants.TIMER_BOOST_MS;
       } else {
+        state.endedAt = Date.now();
         state.endState = {
           isGameOver: true,
           reason: 'incorrect',
@@ -103,6 +105,7 @@ export const pushTopOfDeckToStack =
       }
 
       targetStack.push(url);
+      state.stacks = stacks;
 
       const updatedDeck = deck.filter((url) => {
         return stacks.some((_stack, index) => {
@@ -110,9 +113,7 @@ export const pushTopOfDeckToStack =
           return selectors.selectPagesHaveRelation(state, stackUrl, url);
         });
       });
-
       state.deck = updatedDeck;
-      state.stacks = stacks;
     },
   );
 
@@ -156,7 +157,10 @@ export const setTimerExpiredActionName = 'set_timer_expired';
 export const setTimerExpired = reducer.defineAction(
   setTimerExpiredActionName,
   ({ state }) => {
+    state.endedAt = Date.now();
+
     state.timer = {
+      ...state.timer,
       endsAt: null,
       timeoutId: null,
     };
@@ -167,3 +171,31 @@ export const setTimerExpired = reducer.defineAction(
     };
   },
 );
+
+export const setFadeToEndScreenActionName = 'set_fade_to_end_screen';
+
+export const setFadeToEndScreen = reducer.defineAction(
+  setFadeToEndScreenActionName,
+  ({ state }) => {
+    state.fadeToEndScreen = true;
+  },
+);
+
+export const resetGameActionName = 'reset_game';
+
+export const resetGame = reducer.defineAction(resetGameActionName, ({ state }) => {
+  state.scene = 'game';
+  state.stacks = [];
+  state.deck = [];
+  state.startedAt = null;
+  state.endedAt = null;
+  state.isReadyToPlay = false;
+  state.timer = {
+    endsAt: null,
+    timeoutId: null,
+  };
+  state.endState = {
+    isGameOver: false,
+  };
+  state.fadeToEndScreen = false;
+});

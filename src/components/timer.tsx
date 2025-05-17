@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import classNames from 'classnames';
 import { reducer } from '@/game/reducer';
 import {
   selectTimerEndsAt,
@@ -17,6 +18,7 @@ export function Timer() {
   );
 
   const [displayValue, setDisplayValue] = useState<string>('00:000');
+  const [warning, setWarning] = useState(false);
 
   const intervalId = useRef<number | null>(null);
   const displayRef = useRef<HTMLSpanElement | null>(null);
@@ -26,18 +28,26 @@ export function Timer() {
       return;
     }
 
-    let timeLeft = formatTimeLeft(Math.max(timerEndsAt - Date.now(), 0));
+    let timeLeftDisplay = formatTimeLeft(Math.max(timerEndsAt - Date.now(), 0));
 
     intervalId.current = setInterval(() => {
-      timeLeft = formatTimeLeft(Math.max(timerEndsAt - Date.now(), 0));
+      const timeLeft = Math.max(timerEndsAt - Date.now(), 0);
+      timeLeftDisplay = formatTimeLeft(timeLeft);
+
+      if (timeLeft <= 5000) {
+        setWarning(true);
+      } else {
+        setWarning(false);
+      }
 
       if (displayRef.current) {
-        displayRef.current.textContent = timeLeft;
+        const [seconds, milliseconds] = timeLeftDisplay.split('.');
+        displayRef.current.setHTMLUnsafe(`${seconds}.<span class="--small">${milliseconds}</span>`);
       }
     }, 50);
 
     return () => {
-      setDisplayValue(timeLeft);
+      setDisplayValue(timeLeftDisplay);
 
       if (intervalId.current) {
         clearInterval(intervalId.current);
@@ -54,13 +64,20 @@ export function Timer() {
     }
   }, [isGameOver]);
 
+  const timerClass = classNames('game-timer', {
+    '--expired': gameOverReason === 'time',
+    '--warning': warning,
+  });
+
   return (
-    <div>
-      <h2>Timer</h2>
-      {gameOverReason === 'time' && <span>{formatTimeLeft(0)}</span>}
+    <div className={timerClass}>
+      {gameOverReason === 'time' && <span>00.<span className="--small">000</span></span>}
       {gameOverReason !== 'time' && (
-        <span ref={displayRef}>{displayValue}</span>
+        <span ref={displayRef}>
+          {displayValue.split('.')[0]}.<span className="--small">{displayValue.split('.')[1]}</span>
+        </span>
       )}
+      <p>seconds left</p>
     </div>
   );
 }

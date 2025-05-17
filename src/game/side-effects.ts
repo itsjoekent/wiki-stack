@@ -4,45 +4,48 @@ import * as proxy from './proxy';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
 import type { Page } from './types';
-import { pickDeckCards, randomArrayPick } from './utils';
+import { pickDeckCards, randomArrayPick, randomArrayShuffle } from './utils';
 
 // Load the initial game data
-reducer.registerActionCompletedListener(async (event) => {
-  if (event.data.type !== actions.setSceneActionName) return;
-
+reducer.registerStateChangedListener(async (event) => {
+  const previousScene = selectors.selectScene(event.data.previousState);
   const scene = selectors.selectScene(event.data.updatedState);
+
+  if (previousScene === scene || scene !== 'game') return;
+
   const isTableReady = selectors.selectIsTableReady(event.data.updatedState);
+  if (isTableReady) return;
 
-  if (scene === 'game' && !isTableReady) {
-    // TODO: Add more pages to the starter list
-    const { options } = await import('./starters.json');
-    const starters = randomArrayPick(options, constants.TOTAL_STACKS);
+  // TODO: Add more pages to the starter list
+  const { options } = await import('./starters.json');
+  const starters = randomArrayPick(options, constants.TOTAL_STACKS);
 
-    const starterPages = await Promise.all(
-      starters.map((starter) => proxy.fetchPageData(starter)),
-    );
+  const starterPages = await Promise.all(
+    starters.map((starter) => proxy.fetchPageData(starter)),
+  );
 
-    const pages = starterPages.reduce(
-      (acc, page) => {
-        acc[page.url] = page;
-        return acc;
-      },
-      {} as Record<string, Page>,
-    );
+  const pages = starterPages.reduce(
+    (acc, page) => {
+      acc[page.url] = page;
+      return acc;
+    },
+    {} as Record<string, Page>,
+  );
 
-    const stacks = Object.keys(pages).map((url) => [url]);
-    const deck = stacks
-      .map((stack) =>
-        pickDeckCards(pages[stack[0]], constants.PAGES_TO_ADD_ON_DROP, []),
-      )
-      .flat();
+  const stacks = Object.keys(pages).map((url) => [url]);
+  const deck = stacks
+    .map((stack) =>
+      pickDeckCards(pages[stack[0]], constants.PAGES_TO_ADD_ON_DROP, []),
+    )
+    .flat();
 
-    actions.setupGame({
-      deck,
-      pages,
-      stacks,
-    });
-  }
+  const shuffledDeck = randomArrayShuffle(deck);
+
+  actions.setupGame({
+    deck: shuffledDeck,
+    pages,
+    stacks,
+  });
 });
 
 // Load the page data for cards in the deck that are not already loaded
@@ -152,7 +155,7 @@ reducer.registerActionCompletedListener(async (event) => {
 
   actions.addAndReshuffleDeck({
     addToDeck: addedDeckPages,
-    preserveTopCards: 3,
+    preserveTopCards: 2,
   });
 });
 
@@ -194,6 +197,25 @@ reducer.registerStateChangedListener(async (event) => {
   }, timeLeft);
 
   actions.updateTimerTimeoutId({ timeoutId: updatedTimeoutId });
+});
+
+// Handle the game over state transition
+reducer.registerStateChangedListener(async (event) => {
+  const scene = selectors.selectScene(event.data.updatedState);
+  if (scene !== 'game') return;
+
+  const wasGameOver = selectors.selectIsGameOver(event.data.previousState);
+  const isGameOverNow = selectors.selectIsGameOver(event.data.updatedState);
+  
+  if (!wasGameOver && isGameOverNow) {
+    setTimeout(() => {
+      actions.setFadeToEndScreen();
+    }, 1000);
+
+    setTimeout(() => {
+      actions.setScene({ scene: 'game-over' });
+    }, 2000);
+  }
 });
 
 // TODO: Preload all page images

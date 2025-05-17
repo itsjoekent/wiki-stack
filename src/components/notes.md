@@ -1,15 +1,22 @@
-- mobile drag support
+- sound effects?
 
-- improve timer display
+- more funny starter pages
+- wildcard/joker ?
+- discard zone?
+
+---
+
+end state
 - counter showing how many you've gotten right
+- time played
+- incorrect guess -> what it actually links to
+- all pages in the stack, how they link
+- play new game button
+- share button
 
-- side effect to move the incorrect card to the correct stack on game lose, after a delay
-  - this should actually translate the position somehow
 
-- on game end, show giant list of all wiki pages with title, description, image, link
-
-- on game end, show new game button, share button
-
-- home screen
-
+homepage
+- play game
 - tutorial
+- donate to wikipedia
+- letter/what is this
