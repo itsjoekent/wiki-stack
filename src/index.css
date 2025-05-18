@@ -2,6 +2,7 @@
 @import url('./styles/app.css');
 @import url('./styles/cards.css');
 @import url('./styles/game.css');
+@import url('./styles/end.css');
 
 :root {
   box-sizing: border-box;

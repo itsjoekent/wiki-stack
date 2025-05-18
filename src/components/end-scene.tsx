@@ -22,32 +22,38 @@ export function EndScene() {
   return (
     <div className="end-scene">
       <h1>Game Over</h1>
-      <p>Highest stack: {highestStack.count} cards</p>
-      <p>Total correct: {totalCorrect}</p>
-      <p>Time played: {timePlayed} seconds</p>
+      <div className="end-scene__container --bordered">
+        <h2>Stats</h2>
+        <p>Highest stack: {highestStack.count} cards</p>
+        <p>Total correct: {totalCorrect}</p>
+        <p>Time played: {timePlayed} seconds</p>
+      </div>
       {!!correctLinks && (
-        <div>
+        <ul className="end-scene__container --bordered end-scene__correct-links">
+          <h2>Correct links</h2>
           {correctLinks.map(({ from, to }) => (
-            <div key={`${from.url}-${to.url}`}>
+            <li key={`${from.url}-${to.url}`}>
               <p>
-                {from.title} links to {to.title}
+                <b>{from.title}</b> links to <b>{to.title}</b>
               </p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
       <button onClick={() => resetGame()}>Play again</button>
-      <h2>Stacks</h2>
       {stacksWithpages.map((stack, index) => (
-        <div key={index}>
+        <div key={index} className="end-scene__container end-scene__stack">
           <h3>Stack {index + 1}</h3>
           <ul>
             {stack.map((page) => (
-              <li key={page.url}>
-                <p>{page.title}</p>
+              <li key={page.url} className="end-scene__card">
+                <div className="end-scene__card-header">
+                  <img src={page.imageSrc} alt={page.imageAlt} />
+                  <h4>{page.title}</h4>
+                </div>
                 <p>{page.description}</p>
                 <a href={page.url} target="_blank" rel="noopener noreferrer">
-                  {page.url}
+                  Open Wikipedia page in new tab
                 </a>
               </li>
             ))}
