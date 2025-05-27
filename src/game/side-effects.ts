@@ -16,7 +16,7 @@ reducer.registerStateChangedListener(async (event) => {
   const isTableReady = selectors.selectIsTableReady(event.data.updatedState);
   if (isTableReady) return;
 
-  // TODO: Add more pages to the starter list
+  // TODO: Option to use the popular pages or unusual articles
   const { options } = await import('./starters.json');
   const starters = randomArrayPick(options, constants.TOTAL_STACKS);
 
@@ -35,7 +35,7 @@ reducer.registerStateChangedListener(async (event) => {
   const stacks = Object.keys(pages).map((url) => [url]);
   const deck = stacks
     .map((stack) =>
-      pickDeckCards(pages[stack[0]], constants.PAGES_TO_ADD_ON_DROP, []),
+      pickDeckCards(pages[stack[0]], constants.PAGES_TO_ADD_ON_START, []),
     )
     .flat();
 
@@ -135,7 +135,6 @@ reducer.registerActionCompletedListener(async (event) => {
     stackIndex,
   );
 
-  const existingPages = selectors.selectAllPageUrls(event.data.updatedState);
   let page = selectors.selectPage(event.data.updatedState, topOfStackUrl);
 
   if (!page) {
@@ -143,14 +142,10 @@ reducer.registerActionCompletedListener(async (event) => {
     actions.bulkAddPages({ pages: { [page.url]: page } });
   }
 
-  const possibleAddedDeckPages = page.links.filter((pageLink) =>
-    existingPages.includes(pageLink.url),
-  ).map((pageLink) => pageLink.url);
-
   const addedDeckPages = pickDeckCards(
     page,
     constants.PAGES_TO_ADD_ON_DROP,
-    possibleAddedDeckPages,
+    selectors.selectAllPageUrls(event.data.updatedState),
   );
 
   actions.addAndReshuffleDeck({
@@ -206,7 +201,7 @@ reducer.registerStateChangedListener(async (event) => {
 
   const wasGameOver = selectors.selectIsGameOver(event.data.previousState);
   const isGameOverNow = selectors.selectIsGameOver(event.data.updatedState);
-  
+
   if (!wasGameOver && isGameOverNow) {
     setTimeout(() => {
       actions.setFadeToEndScreen();

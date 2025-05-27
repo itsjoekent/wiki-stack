@@ -1,4 +1,4 @@
-import type { GameState } from './types';
+import type { GameState, Page } from './types';
 
 export function selectScene(state: GameState) {
   return state.scene;
@@ -66,7 +66,7 @@ export function selectDeckPages(state: GameState) {
   return deck.map((url) => selectPage(state, url)).filter(Boolean);
 }
 
-export function selectPageHasLink(
+export function selectPageLink(
   state: GameState,
   pageUrl: string,
   linkUrl: string,
@@ -88,8 +88,8 @@ export function selectPagesHaveRelation(
   if (!leftPage || !rightPage) return false;
 
   return !!(
-    selectPageHasLink(state, leftPageUrl, rightPageUrl) ||
-    selectPageHasLink(state, rightPageUrl, leftPageUrl)
+    selectPageLink(state, leftPageUrl, rightPageUrl) ||
+    selectPageLink(state, rightPageUrl, leftPageUrl)
   );
 }
 
@@ -122,7 +122,7 @@ export function selectHighestStackCount(state: GameState) {
   const incorrectStackIndex = selectIncorrectStackIndex(state);
 
   const [count, index] = stacks.reduce((max, stack, index) => {
-    const length = (stack.length - 1) - (incorrectStackIndex === index ? 1 : 0);
+    const length = (stack.length) - (incorrectStackIndex === index ? 1 : 0);
     if (length > max[0]) {
       return [length, index];
     }
@@ -155,22 +155,29 @@ export function selectTimePlayed(state: GameState) {
 }
 
 export function selectCorrectLinksForIncorrectGuess(state: GameState) {
-  const incorrectStackIndex = selectIncorrectStackIndex(state);
-  if (incorrectStackIndex === null) return null;
+  let incorrectPage: Page | null = null;
 
-  const incorrectPage = selectTopOfStackPage(state, incorrectStackIndex);
+  const incorrectStackIndex = selectIncorrectStackIndex(state);
+  if (incorrectStackIndex === null) {
+    incorrectPage = selectDeckPages(state)[0];
+  } else {
+    incorrectPage = selectTopOfStackPage(state, incorrectStackIndex);
+  }
+
   const topPages = selectStacks(state).map((_stack, index) =>
     selectTopOfStackPage(state, index),
   ).filter((_page, index) => index !== incorrectStackIndex);
 
   return topPages
     .map((page) => {
-      if (selectPageHasLink(state, incorrectPage.url, page.url)) {
-        return { from: incorrectPage, to: page };
+      let link = selectPageLink(state, incorrectPage.url, page.url);
+      if (link) {
+        return { from: incorrectPage, to: page, link };
       }
 
-      if (selectPageHasLink(state, page.url, incorrectPage.url)) {
-        return { from: page, to: incorrectPage };
+      link = selectPageLink(state, page.url, incorrectPage.url);
+      if (link) {
+        return { from: page, to: incorrectPage, link };
       }
 
       return null;
