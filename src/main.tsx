@@ -1,9 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import * as actions from './game/actions';
 import { App } from './components/app';
-import { reducer } from './game/reducer';
 import './game/side-effects';
 
 import './index.css';
@@ -17,9 +15,8 @@ import './index.css';
 //     console.log(JSON.stringify({ options: urls }, null, 2));
 //   });
 
-reducer.registerActionCompletedListener(console.log);
-reducer.registerStateChangedListener(console.log);
-actions.setScene({ scene: 'game' });
+// reducer.registerActionCompletedListener(console.log);
+// reducer.registerStateChangedListener(console.log);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

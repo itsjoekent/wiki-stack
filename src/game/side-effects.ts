@@ -16,8 +16,8 @@ reducer.registerStateChangedListener(async (event) => {
   const isTableReady = selectors.selectIsTableReady(event.data.updatedState);
   if (isTableReady) return;
 
-  // TODO: Option to use the popular pages or unusual articles
-  const { options } = await import('./starters.json');
+  const filePath = selectors.selectGameMode(event.data.updatedState) === 'normal' ? './starters.json' : './unusual-starters.json';
+  const { options } = await import(filePath);
   const starters = randomArrayPick(options, constants.TOTAL_STACKS);
 
   const starterPages = await Promise.all(

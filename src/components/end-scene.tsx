@@ -1,4 +1,4 @@
-import { resetGame } from '@/game/actions';
+import { resetGame, startGame } from '@/game/actions';
 import { reducer } from '@/game/reducer';
 import {
   selectCorrectLinksForIncorrectGuess,
@@ -7,7 +7,9 @@ import {
   selectTotalCorrect,
   selectStacksWithPages,
   selectIncorrectStackIndex,
+  selectGameMode,
 } from '@/game/selectors';
+import { Mode } from '@/game/types';
 import { useReducer } from '@/lib/reducer';
 import classNames from 'classnames';
 
@@ -19,6 +21,7 @@ export function EndScene() {
     correctLinks,
     stacksWithpages,
     incorrectStackIndex,
+    mode,
   ] = useReducer(
     reducer,
     selectTotalCorrect,
@@ -27,13 +30,19 @@ export function EndScene() {
     selectCorrectLinksForIncorrectGuess,
     selectStacksWithPages,
     selectIncorrectStackIndex,
+    selectGameMode
   );
+
+  const oppositeMode: Mode = mode === 'normal' ? 'whimsical' : 'normal';
 
   return (
     <div className="end-scene">
       <h1>Game Over</h1>
       <div className="end-scene__container --bordered">
-        <p>Highest stack: {highestStack.count} card{highestStack.count !== 1 ? 's' : ''}</p>
+        <p>
+          Highest stack: {highestStack.count} card
+          {highestStack.count !== 1 ? 's' : ''}
+        </p>
         <p>Total correct: {totalCorrect}</p>
         <p>Time played: {timePlayed} seconds</p>
       </div>
@@ -54,14 +63,20 @@ export function EndScene() {
                   </a>
                 </b>
               </p>
-              <blockquote>
-                {link.context}
-              </blockquote>
+              <blockquote>{link.context}</blockquote>
             </li>
           ))}
         </ul>
       )}
-      <button onClick={() => resetGame()}>Play again</button>
+      <div className="end-scene__actions">
+        <button onClick={() => resetGame()}>Play again</button>
+        <a
+          className="end-scene__alt"
+          onClick={() => startGame({ mode: oppositeMode })}
+        >
+          Switch to {oppositeMode} mode
+        </a>
+      </div>
       {stacksWithpages.map((stack, stackIndex) => (
         <div key={stackIndex} className="end-scene__container end-scene__stack">
           <h3>Stack {stackIndex + 1}</h3>
@@ -80,7 +95,12 @@ export function EndScene() {
                   <h4>{page.title}</h4>
                 </div>
                 <p>{page.description}</p>
-                <a href={page.url} target="_blank" rel="noopener noreferrer" className="end-scene__card-link">
+                <a
+                  href={page.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="end-scene__card-link"
+                >
                   {page.url}
                 </a>
               </li>

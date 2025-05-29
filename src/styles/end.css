@@ -112,6 +112,18 @@
   white-space: nowrap;
 }
 
+.end-scene__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .end-scene button {
   width: 100%;
+}
+
+.end-scene__alt {
+  cursor: pointer;
+  text-align: center;
+  text-decoration: underline;
 }

@@ -3,6 +3,7 @@ import { GameState } from './types';
 
 export const initialState: GameState = {
   scene: 'intro',
+  mode: 'normal',
   pages: {},
   stacks: [],
   deck: [],

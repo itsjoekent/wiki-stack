@@ -1,4 +1,5 @@
 export type Scene = 'intro' | 'game' | 'game-over' | 'credits';
+export type Mode = 'normal' | 'whimsical';
 
 export type PageLink = {
   url: string;
@@ -19,6 +20,7 @@ export type Stack = Page['url'][];
 
 export type GameState = {
   scene: Scene;
+  mode: Mode;
   pages: Record<Page['url'], Page>;
   stacks: Stack[];
   deck: Stack;

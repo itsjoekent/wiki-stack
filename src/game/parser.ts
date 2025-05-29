@@ -2,9 +2,6 @@ import { Cheerio, type CheerioAPI, load } from 'cheerio';
 import { type Element } from 'domhandler';
 import type { Page, PageLink } from './types';
 
-// TODO: Rewrite this to use DOMParser instead of Cheerio
-// new DOMParser();
-
 function cleanWikiText(text: string, maxLength?: number): string {
   // Remove references like [1], [a], etc.
   text = text.replace(/\[\d+\]|\[\w+\]/g, '');
@@ -19,7 +16,6 @@ function cleanWikiText(text: string, maxLength?: number): string {
 }
 
 export function findPageDescription($: CheerioAPI): string {
-  $('style').remove();
   const paragraphs = $('.mw-parser-output > p').toArray();
 
   for (const paragraph of paragraphs) {
@@ -61,6 +57,7 @@ export function parseWikiPage(url: string, html: string): Page {
   const $ = load(html);
 
   $('.navbox').remove();
+  $('style').remove();
 
   const title = $('#firstHeading')?.text();
   if (!title) throw new Error(`Title not found in ${url}`);
@@ -112,7 +109,7 @@ export function parseWikiPage(url: string, html: string): Page {
       (src) => src && testWikiImage.test(src) && !src.includes('Sound-icon.svg'),
     ) as string[];
 
-  const description = findPageDescription(load(html));
+  const description = findPageDescription(load($.html()));
 
   return {
     title,

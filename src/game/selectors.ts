@@ -184,3 +184,7 @@ export function selectCorrectLinksForIncorrectGuess(state: GameState) {
     })
     .filter((val) => val !== null);
 }
+
+export function selectGameMode(state: GameState) {
+  return state.mode;
+}

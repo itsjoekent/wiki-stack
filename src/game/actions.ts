@@ -1,7 +1,7 @@
 import * as constants from './constants';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
-import type { GameState } from './types';
+import type { GameState, Mode } from './types';
 import { randomArrayShuffle } from './utils';
 
 export type SetSceneActionPayload = {
@@ -183,7 +183,7 @@ export const setFadeToEndScreen = reducer.defineAction(
 
 export const resetGameActionName = 'reset_game';
 
-export const resetGame = reducer.defineAction(resetGameActionName, ({ state }) => {
+function internalReset(state: GameState) {
   state.scene = 'game';
   state.stacks = [];
   state.deck = [];
@@ -198,4 +198,22 @@ export const resetGame = reducer.defineAction(resetGameActionName, ({ state }) =
     isGameOver: false,
   };
   state.fadeToEndScreen = false;
+}
+
+export const resetGame = reducer.defineAction(resetGameActionName, ({ state }) => {
+  internalReset(state);
 });
+
+export const startGameActionName = 'start_game';
+
+export type startGameActionPayload = {
+  mode: Mode
+};
+
+export const startGame = reducer.defineAction<startGameActionPayload>(
+  startGameActionName,
+  ({ state, payload }) => {
+    internalReset(state);
+    state.mode = payload.mode;
+  },
+);
