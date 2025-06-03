@@ -1,4 +1,4 @@
-import { resetGame, startGame } from '@/game/actions';
+import { setScene, resetGame, startGame } from '@/game/actions';
 import { reducer } from '@/game/reducer';
 import {
   selectCorrectLinksForIncorrectGuess,
@@ -75,6 +75,12 @@ export function EndScene() {
           onClick={() => startGame({ mode: oppositeMode })}
         >
           Switch to {oppositeMode} mode
+        </a>
+        <a
+          className="end-scene__alt"
+          onClick={() => setScene({ scene: 'intro' })}
+        >
+          Back to homepage
         </a>
       </div>
       {stacksWithpages.map((stack, stackIndex) => (

@@ -15,9 +15,18 @@ reducer.registerStateChangedListener(async (event) => {
 
   const isTableReady = selectors.selectIsTableReady(event.data.updatedState);
   if (isTableReady) return;
+  
+  const mode = selectors.selectGameMode(event.data.updatedState);
+  let options: string[] = [];
 
-  const filePath = selectors.selectGameMode(event.data.updatedState) === 'normal' ? './starters.json' : './unusual-starters.json';
-  const { options } = await import(filePath);
+  if (mode === 'normal') {
+    options = await import('./starters.json').then((data) => data.options);
+  }
+
+  if (mode === 'whimsical') {
+    options = await import('./unusual-starters.json').then((data) => data.options);
+  }
+
   const starters = randomArrayPick(options, constants.TOTAL_STACKS);
 
   const starterPages = await Promise.all(
