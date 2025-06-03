@@ -6,5 +6,11 @@
     // https://developers.cloudflare.com/workers/static-assets/routing/#not_found_handling--404-page--single-page-application--none
     "not_found_handling": "single-page-application"
   },
-  "main": "./worker/index.ts"
+  "main": "./worker/index.ts",
+  "routes": [
+    {
+      "pattern": "wiki-stack.joekent.com",
+      "custom_domain": true
+    }
+  ]
 }
