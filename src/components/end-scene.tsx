@@ -34,6 +34,7 @@ export function EndScene() {
   );
 
   const oppositeMode: Mode = mode === 'normal' ? 'whimsical' : 'normal';
+  const oppositeModeLabel = oppositeMode === 'normal' ? 'Normal' : 'Unusual Content';
 
   return (
     <div className="end-scene">
@@ -74,7 +75,7 @@ export function EndScene() {
           className="end-scene__alt"
           onClick={() => startGame({ mode: oppositeMode })}
         >
-          Switch to {oppositeMode} mode
+          Switch to {oppositeModeLabel} Mode
         </a>
         <a
           className="end-scene__alt"
