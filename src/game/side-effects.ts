@@ -159,7 +159,7 @@ reducer.registerActionCompletedListener(async (event) => {
 
   actions.addAndReshuffleDeck({
     addToDeck: addedDeckPages,
-    preserveTopCards: 2,
+    preserveTopCards: 4,
   });
 });
 

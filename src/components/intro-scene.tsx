@@ -27,11 +27,11 @@ export function IntroScene() {
       <h1>Welcome to WikiStack</h1>
       <div className="actions">
         <button onClick={() => startGame({ mode: 'normal' })}>
-          Normal mode
+          Normal Mode
         </button>
         <p>or</p>
         <button onClick={() => startGame({ mode: 'whimsical' })}>
-          ✨ Whimsical ✨ mode
+          ✨ Unusual Content ✨ Mode
         </button>
       </div>
 
