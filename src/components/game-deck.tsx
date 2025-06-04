@@ -52,6 +52,7 @@ export function GameDeck() {
 
   return (
     <div className="game-deck">
+      <span>Deck</span>
       <MessyCardStack ids={deckCardIds} renderCard={renderCard} zIndexOffset={1000000} />
     </div>
   );

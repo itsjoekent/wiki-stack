@@ -7,7 +7,7 @@
 
 :root {
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: 14x;
 
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -17,6 +17,13 @@
   -moz-osx-font-smoothing: grayscale;
 
   --card-height: 5rem;
+}
+
+@media (min-width: 600px) {
+  :root {
+    font-size: 16px;
+  }
+  
 }
 
 @media (min-width: 1024px) {

@@ -39,6 +39,7 @@
   width: 100%;
   position: absolute;
   transform-origin: center;
+  touch-action: none;
 }
 
 .flip-card {
